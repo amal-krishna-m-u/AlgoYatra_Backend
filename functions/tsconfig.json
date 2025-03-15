@@ -5,6 +5,7 @@
     "moduleResolution": "nodenext",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "skipLibCheck": true,     // Add this line to skip checking node_modules
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
