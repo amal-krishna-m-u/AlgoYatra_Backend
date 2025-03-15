@@ -27,6 +27,7 @@ export interface Submission {
     feedback?: string;
     reviewerId?: string;
     reviewedAt?: admin.firestore.Timestamp;
+    language:string;
     points?: number; // Points earned for this submission
   }
 /**

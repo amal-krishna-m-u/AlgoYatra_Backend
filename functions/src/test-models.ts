@@ -52,6 +52,7 @@ function testModels() {
       userId: user.id,
       repositoryUrl: 'https://github.com/amal/react-todo',
       submittedAt: now,
+      language:"python",
       status: SubmissionStatus.PENDING
     };
     console.log('✅ Submission model is valid:', submission.repositoryUrl);
