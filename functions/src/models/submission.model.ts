@@ -4,28 +4,31 @@ import * as admin from 'firebase-admin';
  * Submission status
  */
 export enum SubmissionStatus {
-  PENDING = 'pending',
-  REVIEWED = 'reviewed'
-}
-
+    PENDING = 'PENDING',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED',
+    REVIEWED = 'REVIEWED'  // This is a general review status if needed
+  }
+  
 /**
  * Submission data model
  * Represents a user's challenge submission
  */
+/**
+ * Model for a challenge submission
+ */
 export interface Submission {
-  id: string;
-  challengeId: string;
-  userId: string;
-  repositoryUrl: string;
-  submittedAt: admin.firestore.Timestamp;
-  status: SubmissionStatus;
-  feedback?: string;
-  points?: number;
-  reviewedBy?: string; // User ID
-  reviewedAt?: admin.firestore.Timestamp;
-  updatedAt?: admin.firestore.Timestamp;
-}
-
+    id: string;
+    challengeId: string;
+    userId: string;
+    repositoryUrl: string;
+    submittedAt: admin.firestore.Timestamp;
+    status: SubmissionStatus;
+    feedback?: string;
+    reviewerId?: string;
+    reviewedAt?: admin.firestore.Timestamp;
+    points?: number; // Points earned for this submission
+  }
 /**
  * Submission data without ID - used for creating new submissions
  */
