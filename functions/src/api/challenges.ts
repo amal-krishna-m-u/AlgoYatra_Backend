@@ -3,119 +3,112 @@ import { ChallengeService } from '../services/challenge.service';
 import { ChallengeFilters, ChallengeDifficulty } from '../models/challenge.model';
 import { validateAuth } from '../middleware/auth';
 import { AuthenticatedRequest } from '../types';
+
 const router = express.Router();
 const challengeService = new ChallengeService();
 
 /**
- * @route POST /challenges
- * @desc Create a new challenge
+ * Create a new challenge – Requires authentication
  */
 router.post('/', validateAuth, async (req: AuthenticatedRequest, res) => {
-    try {
-        if (!req.user) {
-            return res.status(401).json({ error: 'Unauthorized' }); // ✅ Ensure req.user exists
-        }
-        const challenge = await challengeService.createChallenge(req.body, req.user.id);
-        return res.status(201).json(challenge);  // ✅ Ensure return statement
-    } catch (error) {
-        console.error('Error creating challenge:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
+    const challenge = await challengeService.createChallenge(req.body, req.user.id);
+    return res.status(201).json(challenge);
+  } catch (error: any) {
+    console.error('Error creating challenge:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 /**
- * @route GET /challenges/:id
- * @desc Get challenge by ID
+ * Get challenge by ID
  */
 router.get('/:id', async (req, res) => {
-    try {
-        const challenge = await challengeService.getChallengeById(req.params.id);
-        if (!challenge) {
-            return res.status(404).json({ error: 'Challenge not found' });
-        }
-        res.json(challenge);
-    } catch (error) {
-        console.error('Error fetching challenge:', error);
-        res.status(500).json({ error: 'Internal server error' });
+  try {
+    const challenge = await challengeService.getChallengeById(req.params.id);
+    if (!challenge) {
+      return res.status(404).json({ error: 'Challenge not found' });
     }
+    return res.json(challenge);
+  } catch (error: any) {
+    console.error('Error fetching challenge:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 /**
- * @route GET /challenges
- * @desc Get challenges with filters
+ * Get challenges with filters
  */
 router.get('/', async (req, res) => {
-    try {
-        const filters: Partial<ChallengeFilters> = {};
-        if (req.query.difficulty) {
-            filters.difficulty = ChallengeDifficulty[req.query.difficulty as keyof typeof ChallengeDifficulty];
-        }
-
-        const challenges = await challengeService.getChallenges(filters);
-        res.json(challenges);
-    } catch (error) {
-        console.error('Error fetching challenges:', error);
-        res.status(500).json({ error: 'Internal server error' });
+  try {
+    const filters: Partial<ChallengeFilters> = {};
+    if (req.query.difficulty) {
+      filters.difficulty = ChallengeDifficulty[req.query.difficulty as keyof typeof ChallengeDifficulty];
     }
+    const challenges = await challengeService.getChallenges(filters);
+    return res.json(challenges);
+  } catch (error: any) {
+    console.error('Error fetching challenges:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 /**
- * @route PUT /challenges/:id
- * @desc Update a challenge
+ * Update a challenge – Requires authentication
  */
 router.put('/:id', validateAuth, async (req, res) => {
-    try {
-        const updatedChallenge = await challengeService.updateChallenge(req.params.id, req.body);
-        if (!updatedChallenge) {
-            return res.status(404).json({ error: 'Challenge not found' });
-        }
-        res.json(updatedChallenge);
-    } catch (error) {
-        console.error('Error updating challenge:', error);
-        res.status(500).json({ error: 'Internal server error' });
+  try {
+    const updatedChallenge = await challengeService.updateChallenge(req.params.id, req.body);
+    if (!updatedChallenge) {
+      return res.status(404).json({ error: 'Challenge not found' });
     }
+    return res.json(updatedChallenge);
+  } catch (error: any) {
+    console.error('Error updating challenge:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 /**
- * @route DELETE /challenges/:id
- * @desc Delete a challenge
+ * Delete a challenge – Requires authentication
  */
 router.delete('/:id', validateAuth, async (req, res) => {
-    try {
-        await challengeService.deleteChallenge(req.params.id);
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error deleting challenge:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+  try {
+    await challengeService.deleteChallenge(req.params.id);
+    return res.json({ success: true });
+  } catch (error: any) {
+    console.error('Error deleting challenge:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 /**
- * @route GET /challenges/recent
- * @desc Get recent challenges
+ * Get recent challenges
  */
 router.get('/recent', async (req, res) => {
-    try {
-        const challenges = await challengeService.getChallenges({}, 10);
-        res.json(challenges);
-    } catch (error) {
-        console.error('Error fetching recent challenges:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+  try {
+    const challenges = await challengeService.getChallenges({}, 10);
+    return res.json(challenges);
+  } catch (error: any) {
+    console.error('Error fetching recent challenges:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 /**
- * @route GET /challenges/top
- * @desc Get top challenges
+ * Get top challenges
  */
 router.get('/top', async (req, res) => {
-    try {
-        const challenges = await challengeService.getChallenges({}, 10);
-        res.json(challenges);
-    } catch (error) {
-        console.error('Error fetching top challenges:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+  try {
+    const challenges = await challengeService.getChallenges({}, 10);
+    return res.json(challenges);
+  } catch (error: any) {
+    console.error('Error fetching top challenges:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 export default router;

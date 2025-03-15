@@ -1,5 +1,6 @@
-import * as admin from 'firebase-admin';
+// base.repository.ts
 import { firestore } from 'firebase-admin';
+import { getFirestore } from '../firebase';
 
 /**
  * Generic base repository for Firestore CRUD operations
@@ -13,7 +14,7 @@ export abstract class BaseRepository<T extends { id: string }> {
    * @param collectionName - The name of the Firestore collection
    */
   constructor(collectionName: string) {
-    this.collection = admin.firestore().collection(collectionName);
+    this.collection = getFirestore().collection(collectionName);
   }
   
   /**
@@ -24,13 +25,12 @@ export abstract class BaseRepository<T extends { id: string }> {
   async create(data: Omit<T, 'id'>): Promise<T> {
     const docRef = await this.collection.add(data);
     const newDoc = await docRef.get();
-    
     return {
       id: docRef.id,
       ...newDoc.data()
     } as T;
   }
-  
+
   /**
    * Create a document with a specific ID
    * @param id - The document ID
@@ -39,13 +39,12 @@ export abstract class BaseRepository<T extends { id: string }> {
    */
   async createWithId(id: string, data: Omit<T, 'id'>): Promise<T> {
     await this.collection.doc(id).set(data);
-    
     return {
       id,
       ...data
     } as T;
   }
-  
+
   /**
    * Find a document by ID
    * @param id - The document ID
@@ -53,17 +52,15 @@ export abstract class BaseRepository<T extends { id: string }> {
    */
   async findById(id: string): Promise<T | null> {
     const doc = await this.collection.doc(id).get();
-    
     if (!doc.exists) {
       return null;
     }
-    
     return {
       id: doc.id,
       ...doc.data()
     } as T;
   }
-  
+
   /**
    * Update a document by ID
    * @param id - The document ID
@@ -72,7 +69,7 @@ export abstract class BaseRepository<T extends { id: string }> {
   async update(id: string, data: Partial<Omit<T, 'id'>>): Promise<void> {
     await this.collection.doc(id).update(data);
   }
-  
+
   /**
    * Delete a document by ID
    * @param id - The document ID
@@ -80,20 +77,19 @@ export abstract class BaseRepository<T extends { id: string }> {
   async delete(id: string): Promise<void> {
     await this.collection.doc(id).delete();
   }
-  
+
   /**
    * Find all documents in the collection
    * @returns Array of documents
    */
   async findAll(): Promise<T[]> {
     const snapshot = await this.collection.get();
-    
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     } as T));
   }
-  
+
   /**
    * Find documents matching a query
    * @param queryFn - Function that builds the query
@@ -104,20 +100,17 @@ export abstract class BaseRepository<T extends { id: string }> {
     limit?: number
   ): Promise<T[]> {
     let query = queryFn(this.collection);
-    
     // Apply limit if provided
     if (limit !== undefined) {
       query = query.limit(limit);
     }
-    
     const snapshot = await query.get();
-    
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     } as T));
   }
-  
+
   /**
    * Count documents matching a query
    * @param queryFn - Function that builds the query
@@ -125,15 +118,13 @@ export abstract class BaseRepository<T extends { id: string }> {
    */
   async count(queryFn?: (query: firestore.Query) => firestore.Query): Promise<number> {
     let query: firestore.Query = this.collection;
-    
     if (queryFn) {
       query = queryFn(this.collection);
     }
-    
     const snapshot = await query.count().get();
     return snapshot.data().count;
   }
-  
+
   /**
    * Check if document exists
    * @param id - The document ID
@@ -143,7 +134,7 @@ export abstract class BaseRepository<T extends { id: string }> {
     const doc = await this.collection.doc(id).get();
     return doc.exists;
   }
-  
+
   /**
    * Get document reference
    * @param id - The document ID
