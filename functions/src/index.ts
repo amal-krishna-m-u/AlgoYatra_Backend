@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Register API routes
 app.use("/users", usersRouter);
-app.use("auth",authRouter);
+app.use("/auth",authRouter);
 app.use("/submissions", submissionsRouter);
 app.use("/challenges", challengesRouter);
 app.use("/leaderboard", leaderboardRouter);
